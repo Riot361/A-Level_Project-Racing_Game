@@ -62,7 +62,7 @@ namespace A_Level_Project_Racing
 			Vector2 carPos = new Vector2((graphics.PreferredBackBufferWidth / 2) - (cartexture.Width / 2),
 				(graphics.PreferredBackBufferHeight / 2) - (cartexture.Height / 2));
 			car = new PlayerCar();
-			car.Init(cartexture, carPos);
+			car.Init(cartexture, carPos, Content.Load<SpriteFont>("Regular"));
 			car.Position = new Vector2(map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X - 640 , map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y-320);
 // TODO: use this.Content to load your game content here
 		}
@@ -100,7 +100,7 @@ namespace A_Level_Project_Racing
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			GraphicsDevice.Clear(Color.CornflowerBlue);
+			GraphicsDevice.Clear(Color.Green);
 			spriteBatch.Begin();
 			map.Draw(spriteBatch, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), car.Position);
 

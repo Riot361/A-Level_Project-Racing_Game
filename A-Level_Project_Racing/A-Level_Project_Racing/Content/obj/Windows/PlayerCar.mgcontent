@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/oliver/source/repos/A-Level_Project_Racing/A-Level_Project_Racing/Content/PlayerCar.png</SourceFile>
+  <SourceFile>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/PlayerCar.png</SourceFile>
   <SourceTime>2018-09-27T14:33:42.7158307+01:00</SourceTime>
-  <DestFile>C:/Users/oliver/source/repos/A-Level_Project_Racing/A-Level_Project_Racing/Content/bin/Windows/PlayerCar.xnb</DestFile>
-  <DestTime>2018-09-27T14:34:02.9430301+01:00</DestTime>
+  <DestFile>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/bin/Windows/PlayerCar.xnb</DestFile>
+  <DestTime>2018-10-18T16:08:13.2728295+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2017-03-01T15:05:36+00:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

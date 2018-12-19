@@ -4,7 +4,7 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/oliver/source/repos/A-Level_Project_Racing/A-Level_Project_Racing/Content/spritesheet_tiles.png</File>
-    <File>C:/Users/oliver/source/repos/A-Level_Project_Racing/A-Level_Project_Racing/Content/PlayerCar.png</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/spritesheet_tiles.png</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/PlayerCar.png</File>
   </SourceFiles>
 </SourceFileCollection>
