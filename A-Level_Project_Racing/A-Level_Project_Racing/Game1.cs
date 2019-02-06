@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Input;
 using System.IO;
 using Squared.Tiled;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;
+using System;
+using Microsoft.Xna.Framework.Media;
 
 namespace A_Level_Project_Racing
 {
@@ -21,6 +24,10 @@ namespace A_Level_Project_Racing
 		Texture2D cartexture;
 		PlayerCar car;
 		Texture2D marker;
+		bool crash;
+		public List<Vector2>[] CollisionList =new List<Vector2>[9];
+		Song backgroundsong;
+		bool songplaying = false;
 
 		public Game1()
 		{
@@ -56,14 +63,18 @@ namespace A_Level_Project_Racing
 			map = Map.Load(Path.Combine(Content.RootDirectory, "Track 1.tmx"), Content);
 			collision = map.ObjectGroups["Object Layer 1"];
 			tilepixel = map.TileWidth;
-			
+			for (int i = 0; i < 9; i++)
+			{
+				CollisionList[i] = map.ObjectGroups["Object Layer 1"].Objects["COLLISION" + (i + 1)].PointsList;
+			}
 			cartexture = Content.Load<Texture2D>("PlayerCar");
 			map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Texture = cartexture;
 			Vector2 carPos = new Vector2((graphics.PreferredBackBufferWidth / 2) - (cartexture.Width / 2),
 				(graphics.PreferredBackBufferHeight / 2) - (cartexture.Height / 2));
 			car = new PlayerCar();
 			car.Init(cartexture, carPos, Content.Load<SpriteFont>("Regular"));
-			car.Position = new Vector2(map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X - 640 , map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y-320);
+			car.Position = new Vector2(map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X , map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y);
+			car.savedposition = car.Position;
 // TODO: use this.Content to load your game content here
 		}
 		/// <summary>
@@ -85,13 +96,111 @@ namespace A_Level_Project_Racing
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
 
-			// TODO: Add your update logic here
+			// TODO: Add your update logic here 
+
+			Vector2 temp = car.Position;
+
+			
+			car.Update(gameTime);
+
+			crash = false;
+			for (int i = 1; i < 2; i++)
+			{
+				Vector2 previous = Vector2.Zero;
+				Vector2 check = previous;
+
+				crash = false;
+				map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X = (int)car.Position.X;
+				map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y = (int)car.Position.Y;
+				Rectangle pp = new Rectangle((int)map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X, (int)map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y, car.texture.Width,car.texture.Height);
+
+
+				foreach (Vector2 v in CollisionList[i])
+				{
+					Vector2 newv = v + new Vector2(768, 2300);
+					if (previous == Vector2.Zero)
+					{
+						previous = newv;
+					}
+					else
+					{
+						//Console.WriteLine(newv);
+						bool checkline = true;
+						//var minX = Math.Min(previous.X, newv.X);
+						//var maxX = Math.Max(previous.X, newv.X);
+						//var minY = Math.Min(previous.Y, newv.Y);
+						//var maxY = Math.Max(previous.Y, newv.Y);
+
+						//if (car.Position.X > maxX || car.Position.X+cartexture.Width < minX)
+						//{
+						//	checkline = false;
+						//}
+
+						//if (car.Position.Y > maxY || car.Position.Y+cartexture.Height < minY)
+						//{
+						//	checkline = false;
+						//}
+
+						//if (car.Position.X < minX && maxX < car.Position.X + cartexture.Width)
+						//{
+						//	checkline = true;
+						//}
+
+						//if (car.Position.Y < minY && maxY < car.Position.Y + cartexture.Height)
+						//{
+						//	checkline = true;
+						//}
+
+						if (checkline)
+						{
+							check = previous;
+
+							//Vector2 increment = (newv - previous) / (Vector2.Distance(previous, newv) * 1);
+
+							//while (Vector2.Distance(check, newv) > 3)
+							//{
+							//	Rectangle test = new Rectangle((int)newv.X, (int)newv.Y, 1, 1);
+							//	if ( test.Intersects(pp))
+							//	{
+							//		crash = true;
+							//		Console.WriteLine(check+" "+pp);
+							//		break;
+							//	}
+							//	check += increment;
+							//}
+
+						}
+						previous = newv;
+
+						if (crash)
+							break;
+					}
+
+				}
+			}
+			if (crash)
+				car.Position = temp;
+
+			
+
+			if (songplaying == false)
+			{
+				Random r = new Random();
+				int i = r.Next(1, 11);
+				backgroundsong = Content.Load<Song>("Music/Song"+i);
+				MediaPlayer.Play(backgroundsong);
+				songplaying = true;
+			}
+			if (MediaPlayer.State == MediaState.Stopped)
+			{
+				songplaying = false;
+			}
+			else
+			{
+				
+			}
 
 			base.Update(gameTime);
-			car.Update(gameTime);
-			map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X = (int)car.Position.X;
-			map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y = (int)car.Position.Y;
-
 		}
 
 		/// <summary>
@@ -102,9 +211,14 @@ namespace A_Level_Project_Racing
 		{
 			GraphicsDevice.Clear(Color.Green);
 			spriteBatch.Begin();
-			map.Draw(spriteBatch, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), car.Position);
+			map.Draw(spriteBatch, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), car.Position-new Vector2(640,320));
 
 			car.Draw(spriteBatch);
+			if (crash)
+			{
+				spriteBatch.DrawString(car.font, "collision", new Vector2(100, 150), Color.Black);
+			}
+			
 			spriteBatch.End();
 
 			// TODO: Add your drawing code here

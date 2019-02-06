@@ -25,6 +25,72 @@
 /processorParam:TextureFormat=Color
 /build:spritesheet_tiles.png
 
+#begin Music/Song1.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song1.mp3
+
+#begin Music/Song2.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song2.mp3
+
+#begin Music/Song3.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song3.mp3
+
+#begin Music/Song4.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song4.mp3
+
+#begin Music/Song5.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song5.mp3
+
+#begin Music/Song6.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song6.mp3
+
+#begin Music/Song7.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song7.mp3
+
+#begin Music/Song8.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song8.mp3
+
+#begin Music/Song9.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song9.mp3
+
+#begin Music/Song10.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song10.mp3
+
+#begin Music/Song11.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Song11.mp3
+
 #begin PlayerCar.png
 /importer:TextureImporter
 /processor:TextureProcessor

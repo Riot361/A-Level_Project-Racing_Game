@@ -5,6 +5,17 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/spritesheet_tiles.png</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song1.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song2.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song3.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song4.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song5.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song6.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song7.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song8.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song9.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song10.mp3</File>
+    <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/Music/Song11.mp3</File>
     <File>C:/Users/oliver/Source/Repos/A-Level_Project-Racing_Game/A-Level_Project_Racing/A-Level_Project_Racing/Content/PlayerCar.png</File>
   </SourceFiles>
 </SourceFileCollection>
