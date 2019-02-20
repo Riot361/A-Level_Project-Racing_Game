@@ -872,8 +872,8 @@ namespace Squared.Tiled
 							{
 								string[] p = new string[2];
 								p = s.Split(',');
-								int x = (int)Convert.ToDouble(p[0]);
-								int y = (int)Convert.ToDouble(p[1]);
+								int x = (int)Convert.ToDouble(p[0])+result.X;
+								int y = (int)Convert.ToDouble(p[1])+result.Y;
 								test1.Add(new Vector2(x, y));
 							}
 							result.PointsList = test1;
