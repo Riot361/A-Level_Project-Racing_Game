@@ -20,6 +20,7 @@ namespace A_Level_Project_Racing
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 		PrimitiveBatch primitiveBatch;
+		Texture2D Menuback;
 		Map map;
 		ObjectGroup collision;
 		Vector2 viewportPosition;
@@ -31,12 +32,16 @@ namespace A_Level_Project_Racing
 		public List<Vector2>[] CollisionList =new List<Vector2>[9];
 		Song backgroundsong;
 		bool songplaying = false;
+		bool songallowed = true;
+		bool songingame = true;
+		bool songinmenu = true;
 		SimpleTextUI menu;
 		SimpleTextUI options;
 		SimpleTextUI current;
 		Timer keytimer;
 		SpriteFont small;
 		SpriteFont big;
+		Vector2 intersect = Vector2.Zero;
 
 
 
@@ -57,7 +62,7 @@ namespace A_Level_Project_Racing
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			graphics.PreferredBackBufferWidth = 1280;
-			graphics.PreferredBackBufferHeight = 720;
+			graphics.PreferredBackBufferHeight = 640;
 		}
 
 		/// <summary>
@@ -86,6 +91,7 @@ namespace A_Level_Project_Racing
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 			primitiveBatch = new PrimitiveBatch(GraphicsDevice);
 			map = Map.Load(Path.Combine(Content.RootDirectory, "Track 1.tmx"), Content);
+			Menuback = Content.Load<Texture2D>("MenuWallpaper");
 			collision = map.ObjectGroups["Object Layer 1"];
 			tilepixel = map.TileWidth;
 			for (int i = 0; i < 9; i++)
@@ -106,17 +112,22 @@ namespace A_Level_Project_Racing
 			small = Content.Load<SpriteFont>("Regular");
 			menu = new SimpleTextUI(this, big, new[] { "Play", "Options", "Credits", "Exit" })
 			{
-				TextColor = Color.Purple,
-				SelectedElement = new TextElement(">", Color.Green),
+				TextColor = Color.RoyalBlue,
+				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
 				Align = Alignment.Left
 			};
 
 			options = new SimpleTextUI(this, big, new TextElement[]
 			{
-				new SelectElement("Video", new[]{"FullScreen","Windowed"}),
-				new NumericElement("Music",1,3,0f,10f,1f),
+				new SelectElement("Video", new[]{"Windowed","FullScreen"}),
+				new SelectElement("Music", new[]{"Menu and Game","Game only","Menu only","None"}),
 				new TextElement("Back")
-			});
+			})
+			{
+				TextColor = Color.RoyalBlue,
+				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
+				Align = Alignment.Left
+			};
 			current = menu;
 
 			keytimer = new Timer();
@@ -162,6 +173,16 @@ namespace A_Level_Project_Racing
 						if (current.GetCurrentCaption() == "Video")
 						{
 							graphics.IsFullScreen = (current.GetCurrentValue() == "FullScreen");
+							if (graphics.IsFullScreen)
+							{
+								graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+								graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+							}
+							else
+							{
+								graphics.PreferredBackBufferHeight = 640;
+								graphics.PreferredBackBufferWidth = 1280;
+							}
 							graphics.ApplyChanges();
 						}
 					}
@@ -172,6 +193,16 @@ namespace A_Level_Project_Racing
 						if (current.GetCurrentCaption() == "Video")
 						{
 							graphics.IsFullScreen = (current.GetCurrentValue() == "FullScreen");
+							if(graphics.IsFullScreen)
+							{
+								graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+								graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+							}
+							else
+							{
+								graphics.PreferredBackBufferHeight = 640;
+								graphics.PreferredBackBufferWidth = 1280;
+							}
 							graphics.ApplyChanges();
 						}
 					}
@@ -206,6 +237,30 @@ namespace A_Level_Project_Racing
 					}
 					else
 						change = false;
+					if (current.GetCurrentCaption() == "Music")
+					{
+						if (current.GetCurrentValue() == "Menu and Game")
+						{
+							songinmenu = true;
+							songingame = true;
+						}
+						else if (current.GetCurrentValue() == "Menu only")
+						{
+							songinmenu = true;
+							songingame = false;
+						}
+						else if (current.GetCurrentValue() == "Game only")
+						{
+							songinmenu = false;
+							songingame = true;
+						}
+						else
+						{
+							songinmenu = false;
+							songingame = false;
+						}
+					}
+
 
 					if (change)
 					{
@@ -214,6 +269,14 @@ namespace A_Level_Project_Racing
 						keytimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
 						keytimer.Enabled = true;
 					}
+				}
+				if (songinmenu == true)
+				{
+					songallowed = true;
+				}
+				else
+				{
+					songallowed = false;
 				}
 			}
 			else if (currentmenu == Menu.play)
@@ -239,8 +302,14 @@ namespace A_Level_Project_Racing
 
 					foreach (Vector2 v in CollisionList[i])
 					{
-						Vector2 newv = v + new Vector2(768, 2300);
-						if (previous == Vector2.Zero)
+						Vector2 newv = v;
+						intersect = Vector2.Zero;
+						List<Vector2> carlines = new List<Vector2>();
+						Vector2 d = new Vector2(pp.Width, pp.Height);
+						Vector2 d2 = new Vector2(pp.Width, pp.Height);
+						carlines.Add(d);
+						carlines.Add(d2);
+						if (newv == Vector2.Zero)
 						{
 							previous = newv;
 						}
@@ -248,6 +317,33 @@ namespace A_Level_Project_Racing
 						{
 							//Console.WriteLine(newv);
 							bool checkline = true;
+							Vector2 b = newv - previous;
+							float dotp = Vector2.Dot(b, d);
+							if (dotp == 0)
+								crash = false;
+							else
+							{
+								Vector2 c = new Vector2(pp.X, pp.Y) - previous;
+								float t = (c.X * d.Y - c.Y * d.X) / dotp;
+								float u = (c.X * b.Y - c.Y * b.X) / dotp;
+								if (t < 0 || t > 1)
+								{
+									crash = false;
+								}
+
+								
+								else if (u < 0 || u > 1)
+								{
+									crash = false;
+								}
+								else
+								{
+									intersect = new Vector2(pp.X, pp.Y) + t * b;
+									crash = true;
+								}
+								Console.WriteLine(t + " " + u);
+
+							}
 							//var minX = Math.Min(previous.X, newv.X);
 							//var maxX = Math.Max(previous.X, newv.X);
 							//var minY = Math.Min(previous.Y, newv.Y);
@@ -273,25 +369,6 @@ namespace A_Level_Project_Racing
 							//	checkline = true;
 							//}
 
-							if (checkline)
-							{
-								check = previous;
-
-								//Vector2 increment = (newv - previous) / (Vector2.Distance(previous, newv) * 1);
-
-								//while (Vector2.Distance(check, newv) > 3)
-								//{
-								//	Rectangle test = new Rectangle((int)newv.X, (int)newv.Y, 1, 1);
-								//	if ( test.Intersects(pp))
-								//	{
-								//		crash = true;
-								//		Console.WriteLine(check+" "+pp);
-								//		break;
-								//	}
-								//	check += increment;
-								//}
-
-							}
 							previous = newv;
 
 							if (crash)
@@ -303,9 +380,20 @@ namespace A_Level_Project_Racing
 				if (crash)
 					car.Position = temp;
 
+				if (songingame == true)
+				{
+					songallowed = true;
+				}
+				else
+				{
+					songallowed = false;
+				}
 
 
-				if (songplaying == false)
+
+				
+			}
+			if (songplaying == false && songallowed == true)
 				{
 					Random r = new Random();
 					int i = r.Next(1, 11);
@@ -313,15 +401,20 @@ namespace A_Level_Project_Racing
 					MediaPlayer.Play(backgroundsong);
 					songplaying = true;
 				}
-				if (MediaPlayer.State == MediaState.Stopped)
+			else if (MediaPlayer.State == MediaState.Stopped)
 				{
 					songplaying = false;
 				}
-				else
+			else if (songallowed == false)
+			{
+				MediaPlayer.Stop();
+				songplaying = false;
+			}
+			else
 				{
 
 				}
-			}
+
 			base.Update(gameTime);
 		}
 
@@ -348,30 +441,34 @@ namespace A_Level_Project_Racing
 				map.Draw(spriteBatch, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), car.Position - new Vector2(640, 320));
 				Vector2 vl = Vector2.Zero;
 				Vector2 screen = new Vector2((graphics.PreferredBackBufferWidth / 2), (graphics.PreferredBackBufferHeight / 2));
-				foreach (List<Vector2> cl in CollisionList)
+				if (false)
 				{
-					foreach (Vector2 v in cl)
+					foreach (List<Vector2> cl in CollisionList)
 					{
-						if (vl == Vector2.Zero)
+						foreach (Vector2 v in cl)
 						{
+							if (vl == Vector2.Zero)
+							{
 
+							}
+							else
+							{
+								primitiveBatch.Begin(PrimitiveType.LineList);
+								primitiveBatch.AddVertex(vl - car.Position + screen, Color.Purple);
+								primitiveBatch.AddVertex(v - car.Position + screen, Color.Purple);
+								primitiveBatch.End();
+							}
+							vl = v;
 						}
-						else
-						{
-							primitiveBatch.Begin(PrimitiveType.LineList);
-							primitiveBatch.AddVertex(vl - car.Position + screen, Color.Purple);
-							primitiveBatch.AddVertex(v - car.Position + screen, Color.Purple);
-							primitiveBatch.End();
-						}
-						vl = v;
+						vl = Vector2.Zero;
 					}
-					vl = Vector2.Zero;
 				}
 				car.Draw(spriteBatch);
 				if (crash)
 				{
 					spriteBatch.DrawString(car.font, "collision", new Vector2(100, 150), Color.Black);
 				}
+				spriteBatch.DrawString(car.font, "intersect : " + intersect, new Vector2(100, 400), Color.Black);
 
 
 				spriteBatch.End();
@@ -380,6 +477,9 @@ namespace A_Level_Project_Racing
 			if (currentmenu != Menu.play)
 			{
 				GraphicsDevice.Clear(Color.Blue);
+				spriteBatch.Begin();
+				spriteBatch.Draw(Menuback, null, new Rectangle(0,0,graphics.PreferredBackBufferWidth,graphics.PreferredBackBufferHeight), null,null,0,null,null,SpriteEffects.None,0);
+				spriteBatch.End();
 				current.Draw(gameTime);
 			}
 			

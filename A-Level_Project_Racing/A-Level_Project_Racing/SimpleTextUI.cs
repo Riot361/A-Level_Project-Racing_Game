@@ -149,7 +149,7 @@ namespace A1r.SimpleTextUI
 
 	public class SimpleTextUI : DrawableGameComponent
 	{
-		public Color TextColor = Color.LightGreen;
+		public Color TextColor = Color.RoyalBlue;
 		public int Width = 100;
 		public Alignment Align
 		{
