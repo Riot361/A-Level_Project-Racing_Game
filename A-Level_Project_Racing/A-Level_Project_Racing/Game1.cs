@@ -37,6 +37,8 @@ namespace A_Level_Project_Racing
 		bool songinmenu = true;
 		SimpleTextUI menu;
 		SimpleTextUI options;
+		SimpleTextUI levelselect;
+		SimpleTextUI credits;
 		SimpleTextUI current;
 		Timer keytimer;
 		SpriteFont small;
@@ -110,7 +112,7 @@ namespace A_Level_Project_Racing
 
 			big = Content.Load<SpriteFont>("Regular");
 			small = Content.Load<SpriteFont>("Regular");
-			menu = new SimpleTextUI(this, big, new[] { "Play", "Options", "Credits", "Exit" })
+			menu = new SimpleTextUI(this, big, new[] { "Level Select", "Options", "Credits", "Exit" })
 			{
 				TextColor = Color.RoyalBlue,
 				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
@@ -125,6 +127,20 @@ namespace A_Level_Project_Racing
 			})
 			{
 				TextColor = Color.RoyalBlue,
+				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
+				Align = Alignment.Left
+			};
+
+			levelselect = new SimpleTextUI(this, big, new[] { "Level 1", "Level 2", "Level 3", "Level 4", "Back" })
+			{
+				TextColor = Color.RoyalBlue,
+				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
+				Align = Alignment.Left
+			};
+
+			credits = new SimpleTextUI(this, big, new[] { "CREDITS;", "    Game Demo created as an A-Level computer science project", "Creator;", "    Oliver Briggs", "Back" })
+			{
+				TextColor = Color.Goldenrod,
 				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
 				Align = Alignment.Left
 			};
@@ -150,7 +166,10 @@ namespace A_Level_Project_Racing
 		protected override void Update(GameTime gameTime)
 		{
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+			{
 				currentmenu = Menu.main;
+				current = menu;
+			}
 			KeyboardState keys = Keyboard.GetState();
 			bool change = true;
 			if (currentmenu != Menu.play)
@@ -220,7 +239,34 @@ namespace A_Level_Project_Racing
 								current = options;
 								currentmenu = Menu.options;
 							}
-							else if (test == "Play")
+							else if (test == "Level Select")
+							{
+								current = levelselect;
+							}
+							else if (test == "Credits")
+							{
+								current = credits;
+							}
+						}
+
+						else if (current ==  credits)
+						{
+							if (test == "Back")
+							{
+								current = menu;
+								currentmenu = Menu.main;
+							}
+
+						}
+
+						else if (current == levelselect)
+						{
+							if (test == "Back")
+							{
+								current = menu;
+								currentmenu = Menu.main;
+							}
+							else if (test == "Level 1")
 							{
 								currentmenu = Menu.play;
 							}
@@ -300,75 +346,84 @@ namespace A_Level_Project_Racing
 					Rectangle pp = new Rectangle((int)map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X, (int)map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y, car.texture.Width, car.texture.Height);
 
 
+					List<Vector2> carlines = new List<Vector2>();
+					Vector2 pd1 = new Vector2(pp.Width, pp.Height);
+					Vector2 pd2 = new Vector2(pp.Width, -pp.Height);
+					carlines.Add(pd1);
+					carlines.Add(pd2);
+					List<Vector2> carpos = new List<Vector2>();
+					Vector2 l1 = new Vector2(pp.X, pp.Y);
+					Vector2 l2 = new Vector2(pp.X, pp.Y + pp.Height) - previous;
+					carpos.Add(l1);
+					carpos.Add(l2);
+
+
 					foreach (Vector2 v in CollisionList[i])
 					{
 						Vector2 newv = v;
 						intersect = Vector2.Zero;
-						List<Vector2> carlines = new List<Vector2>();
-						Vector2 d = new Vector2(pp.Width, pp.Height);
-						Vector2 d2 = new Vector2(pp.Width, pp.Height);
-						carlines.Add(d);
-						carlines.Add(d2);
-						if (newv == Vector2.Zero)
+						
+
+						if (previous == Vector2.Zero)
 						{
-							previous = newv;
+							previous = v;
 						}
 						else
 						{
-							//Console.WriteLine(newv);
-							bool checkline = true;
-							Vector2 b = newv - previous;
-							float dotp = Vector2.Dot(b, d);
-							if (dotp == 0)
-								crash = false;
-							else
+							int pline = 0;
+							foreach(Vector2 l in carpos)
 							{
-								Vector2 c = new Vector2(pp.X, pp.Y) - previous;
-								float t = (c.X * d.Y - c.Y * d.X) / dotp;
-								float u = (c.X * b.Y - c.Y * b.X) / dotp;
-								if (t < 0 || t > 1)
-								{
-									crash = false;
-								}
-
 								
-								else if (u < 0 || u > 1)
-								{
+								//Console.WriteLine(newv);
+								bool checkline = true;
+
+								Vector2 b = newv - previous;
+								float dotp1 = Vector2.Dot(b, pd1);
+								//float dotp2 = Vector2.Dot(b, d2);
+								if (dotp1 == 0)
 									crash = false;
-								}
 								else
 								{
-									intersect = new Vector2(pp.X, pp.Y) + t * b;
-									crash = true;
+									
+									float a1 = previous.X;
+									float a2 = l.X;
+									float b1 = previous.Y;
+									float b2 = l.Y;
+									float d1 = b.X;
+									float d2 = carlines[pline].X;
+									float e1 = b.Y;
+									float e2 = carlines[pline].Y;
+
+
+									float t = ((b1 * d1) + (a2 * e1) - (a1 * e1) - (b2 * d1)) / ((e2 * d1) - (d2 * e1));
+									float s = (a2 + (t * d2) - a1) / (d1);
+									Vector2 r1 = new Vector2(a1, b1) + (s * new Vector2(d1, e1));
+									Vector2 r2 = new Vector2(a2, b2) + (t * new Vector2(d2, e2));
+									r1 = new Vector2((int)r1.X, (int)r1.Y);
+									r2 = new Vector2((int)r2.X, (int)r2.Y);
+									if (r1 == r2)
+									{
+										if (s < 0 || t < 0)
+										{
+											crash = false;
+										}
+										else if (s > 1 || t > 1)
+										{
+											crash = false;
+										}
+										else
+										{
+											crash = true;
+											intersect = r1;
+										}
+									}
+									else
+									{
+										crash = false;
+									}
 								}
-								Console.WriteLine(t + " " + u);
-
+								pline++;
 							}
-							//var minX = Math.Min(previous.X, newv.X);
-							//var maxX = Math.Max(previous.X, newv.X);
-							//var minY = Math.Min(previous.Y, newv.Y);
-							//var maxY = Math.Max(previous.Y, newv.Y);
-
-							//if (car.Position.X > maxX || car.Position.X+cartexture.Width < minX)
-							//{
-							//	checkline = false;
-							//}
-
-							//if (car.Position.Y > maxY || car.Position.Y+cartexture.Height < minY)
-							//{
-							//	checkline = false;
-							//}
-
-							//if (car.Position.X < minX && maxX < car.Position.X + cartexture.Width)
-							//{
-							//	checkline = true;
-							//}
-
-							//if (car.Position.Y < minY && maxY < car.Position.Y + cartexture.Height)
-							//{
-							//	checkline = true;
-							//}
-
 							previous = newv;
 
 							if (crash)
