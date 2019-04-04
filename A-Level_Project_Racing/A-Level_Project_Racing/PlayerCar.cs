@@ -30,6 +30,7 @@ namespace A_Level_Project_Racing
 		public SpriteFont font;
 		bool Recover = false;
 		public Rectangle bounds;
+		public bool restart = false;
 		public bool timer
 		{
 			get
@@ -38,14 +39,7 @@ namespace A_Level_Project_Racing
 			}
 			set
 			{
-				if (value)
-				{
-					time.Start();
-				}
-				else
-				{
 					time.Stop();
-				}
 			}
 
 		}
@@ -62,6 +56,14 @@ namespace A_Level_Project_Racing
 		public void GetInputs(KeyboardState input)
 		{
 			Recover = false;
+			if (restart == true)
+			{
+				Recover = true;
+				steer = savedsteer;
+				speed = 0;
+				angle = 0;
+				time.Restart();
+			}
 			if (input.IsKeyDown(Keys.R))
 			{
 				Recover = true;
@@ -171,8 +173,17 @@ namespace A_Level_Project_Racing
 
 			slide = Math.Abs((angle) * 10);
 		}
-		public void Update(GameTime gameTime)
+		public void Update(GameTime gameTime, bool carrecover, A_Level_Project_Racing.Game1.Menu currentmenu)
 		{
+			if (currentmenu == Game1.Menu.play)
+			{
+				time.Start();
+			}
+			else
+			{
+				time.Stop();
+			}
+			restart = carrecover;
 			GetInputs(Keyboard.GetState());
 			position = position + new Vector2(speed * (float)Math.Cos(steer),speed * (float)Math.Sin(steer));
 			if (Recover == true)
