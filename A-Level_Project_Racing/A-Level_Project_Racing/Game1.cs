@@ -27,6 +27,7 @@ namespace A_Level_Project_Racing
 		int tilepixel;
 		Texture2D cartexture;
 		PlayerCar car;
+		AICar AI5;
 		Texture2D marker;
 		bool crash;
 		public List<Vector2>[] CollisionList = new List<Vector2>[9];
@@ -41,18 +42,21 @@ namespace A_Level_Project_Racing
 		SimpleTextUI credits;
 		SimpleTextUI current;
 		SimpleTextUI racecomplete;
+		SimpleTextUI racelost;
 		Timer keytimer;
 		SpriteFont small;
 		SpriteFont big;
 		Vector2 intersect = Vector2.Zero;
 		int pline = 0;
 		Vector2 newv = Vector2.Zero;
-		public List<Vector2>[] CheckList = new List<Vector2>[24];
+		public List<Vector2>[] CheckList = new List<Vector2>[29];
 		public List<Vector2>[] Start = new List<Vector2>[1];
 		Vector2 previous = Vector2.Zero;
 		int checkdisplayed = 0;
 		int checkpoint = 0;
+		int AIcheckpoint = 0;
 		int lap = 4;
+		int AIlap = 4;
 		bool checkhit = false;
 		bool start = false;
 		bool starthit = false;
@@ -113,7 +117,7 @@ namespace A_Level_Project_Racing
 			{
 				CollisionList[i] = map.ObjectGroups["Object Layer 1"].Objects["COLLISION" + (i + 1)].PointsList;
 			}
-			for (int i = 0; i < 24; i++)
+			for (int i = 0; i < 29; i++)
 			{
 				Rectangle check = new Rectangle(map.ObjectGroups["Object Layer 1"].Objects["CHECK" + (i + 1)].X, map.ObjectGroups["Object Layer 1"].Objects["CHECK" + (i + 1)].Y, map.ObjectGroups["Object Layer 1"].Objects["CHECK" + (i + 1)].Width, map.ObjectGroups["Object Layer 1"].Objects["CHECK" + (i + 1)].Height);
 				List<Vector2> pointlist = new List<Vector2>();
@@ -141,6 +145,15 @@ namespace A_Level_Project_Racing
 			car.Init(cartexture, carPos, Content.Load<SpriteFont>("Regular"));
 			car.Position = new Vector2(map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].X, map.ObjectGroups["Object Layer 1"].Objects["PLAYER"].Y);
 			car.savedposition = car.Position;
+
+
+			map.ObjectGroups["Object Layer 1"].Objects["AI5"].Texture = cartexture;
+			Vector2 aiPos = new Vector2((graphics.PreferredBackBufferWidth / 2) - (cartexture.Width / 2),
+				(graphics.PreferredBackBufferHeight / 2) - (cartexture.Height / 2));
+			AI5 = new AICar();
+			AI5.Init(cartexture, aiPos, Content.Load<SpriteFont>("Regular"));
+			AI5.Position = new Vector2(map.ObjectGroups["Object Layer 1"].Objects["AI5"].X, map.ObjectGroups["Object Layer 1"].Objects["AI5"].Y);
+			AI5.savedposition = AI5.Position;
 
 
 			big = Content.Load<SpriteFont>("Regular");
@@ -179,6 +192,13 @@ namespace A_Level_Project_Racing
 			};
 
 			racecomplete = new SimpleTextUI(this, big, new[] { "Race Complete!", "Congratulations!!", "Exit To Main Menu"})
+			{
+				TextColor = Color.Goldenrod,
+				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
+				Align = Alignment.Left
+			};
+
+			racelost = new SimpleTextUI(this, big, new[] { "Race Lost!", "The AI Beat You!!", "Exit To Main Menu" })
 			{
 				TextColor = Color.Goldenrod,
 				SelectedElement = new TextElement("--> = ", Color.Goldenrod),
@@ -325,9 +345,12 @@ namespace A_Level_Project_Racing
 							{
 								currentmenu = Menu.play;
 								lap = 1;
+								AIlap = 1;
 								checkpoint = 0;
+								AIcheckpoint = 0;
 								carrecover = true;
 								car.Update(gameTime, carrecover, currentmenu);
+								AI5.Update(gameTime, carrecover, currentmenu);
 							}
 						}
 
@@ -341,6 +364,15 @@ namespace A_Level_Project_Racing
 						}
 
 						else if (current == racecomplete)
+						{
+							if (test == "Exit To Main Menu")
+							{
+								current = menu;
+								currentmenu = Menu.main;
+							}
+						}
+
+						else if (current == racelost)
 						{
 							if (test == "Exit To Main Menu")
 							{
@@ -402,6 +434,7 @@ namespace A_Level_Project_Racing
 
 
 				car.Update(gameTime, carrecover, currentmenu);
+				AI5.Update(gameTime, carrecover, currentmenu, AIcheckpoint, CheckList);
 
 
 				crash = false;
@@ -627,91 +660,91 @@ namespace A_Level_Project_Racing
 				carpos.Add(l1);
 				carpos.Add(l2);
 				if (start == false)
+				{
+					foreach (Vector2 v in CheckList[checkpoint])
 					{
-						foreach (Vector2 v in CheckList[checkpoint])
+						newv = v;
+						intersect = Vector2.Zero;
+						if (newv.X == previous.X || newv.Y == previous.Y)
 						{
-							newv = v;
-							intersect = Vector2.Zero;
-							if (newv.X == previous.X || newv.Y == previous.Y)
-							{
-								previous = previous + new Vector2(1, 1);
-							}
+							previous = previous + new Vector2(1, 1);
+						}
 
-							if (previous == Vector2.Zero)
+						if (previous == Vector2.Zero)
+						{
+							previous = v;
+						}
+						else
+						{
+							pline = 0;
+							foreach (Vector2 l in carpos)
 							{
-								previous = v;
-							}
-							else
-							{
-								pline = 0;
-								foreach (Vector2 l in carpos)
+
+								//Console.WriteLine(newv);
+								bool checkline = true;
+
+								Vector2 b = newv - previous;
+								float dotp1 = Vector2.Dot(b, pd1);
+								//float dotp2 = Vector2.Dot(b, d2);
+								if (dotp1 == 0)
+									checkhit = false;
+								else
 								{
 
-									//Console.WriteLine(newv);
-									bool checkline = true;
+									float a1 = previous.X;
+									float a2 = l.X;
+									float b1 = previous.Y;
+									float b2 = l.Y;
+									float d1 = b.X;
+									float d2 = carlines[pline].X;
+									float e1 = b.Y;
+									float e2 = carlines[pline].Y;
 
-									Vector2 b = newv - previous;
-									float dotp1 = Vector2.Dot(b, pd1);
-									//float dotp2 = Vector2.Dot(b, d2);
-									if (dotp1 == 0)
-										checkhit = false;
-									else
+
+									float t = ((b1 * d1) + (a2 * e1) - (a1 * e1) - (b2 * d1)) / ((e2 * d1) - (d2 * e1));
+									float s = (a2 + (t * d2) - a1) / (d1);
+									Vector2 r1 = new Vector2(a1, b1) + (s * new Vector2(d1, e1));
+									Vector2 r2 = new Vector2(a2, b2) + (t * new Vector2(d2, e2));
+									r1 = new Vector2((int)r1.X, (int)r1.Y);
+									r2 = new Vector2((int)r2.X, (int)r2.Y);
+									if (r1 == r2)
 									{
-
-										float a1 = previous.X;
-										float a2 = l.X;
-										float b1 = previous.Y;
-										float b2 = l.Y;
-										float d1 = b.X;
-										float d2 = carlines[pline].X;
-										float e1 = b.Y;
-										float e2 = carlines[pline].Y;
-
-
-										float t = ((b1 * d1) + (a2 * e1) - (a1 * e1) - (b2 * d1)) / ((e2 * d1) - (d2 * e1));
-										float s = (a2 + (t * d2) - a1) / (d1);
-										Vector2 r1 = new Vector2(a1, b1) + (s * new Vector2(d1, e1));
-										Vector2 r2 = new Vector2(a2, b2) + (t * new Vector2(d2, e2));
-										r1 = new Vector2((int)r1.X, (int)r1.Y);
-										r2 = new Vector2((int)r2.X, (int)r2.Y);
-										if (r1 == r2)
-										{
-											if (s < 0 || t < 0)
-											{
-												checkhit = false;
-											}
-											else if (s > 1 || t > 1)
-											{
-												checkhit = false;
-											}
-											else
-											{
-												checkhit = true;
-											}
-										}
-										else
+										if (s < 0 || t < 0)
 										{
 											checkhit = false;
 										}
+										else if (s > 1 || t > 1)
+										{
+											checkhit = false;
+										}
+										else
+										{
+											checkhit = true;
+										}
 									}
-									pline++;
-								}
-								previous = newv;
-								if (checkhit == true)
-								{
-									checkpoint++;
-									if (checkpoint > 23)
+									else
 									{
-										start = true;
+										checkhit = false;
 									}
 								}
-
-								if (checkhit)
-									break;
+								pline++;
+							}
+							previous = newv;
+							if (checkhit == true)
+							{
+								checkpoint++;
+								if (checkpoint > 28)
+								{
+									start = true;
+								}
 							}
 
+							if (checkhit)
+								break;
 						}
+
 					}
+				}
 				else if (start == true)
 				{
 					foreach (Vector2 v in Start[0])
@@ -790,8 +823,17 @@ namespace A_Level_Project_Racing
 								lap++;
 								if (lap > 3)
 								{
-									currentmenu = Menu.main;
-									current = racecomplete;
+									if (AIlap < 4)
+									{
+										currentmenu = Menu.main;
+										current = racecomplete;
+									}
+									else
+									{
+										currentmenu = Menu.main;
+										current = racelost;
+									}
+									
 								}
 							}
 
@@ -802,13 +844,31 @@ namespace A_Level_Project_Racing
 
 
 				}
-			checkdisplayed = checkpoint;
-		} 
+				checkdisplayed = checkpoint;
 
-			base.Update(gameTime);
-	}
+				double DistanceAItoCheck = (((AI5.NextCheckPoint.Y - AI5.Position.Y)* (AI5.NextCheckPoint.Y - AI5.Position.Y)) + ((AI5.NextCheckPoint.X - AI5.Position.X)* (AI5.NextCheckPoint.X - AI5.Position.X)));
+				int distanceAItoCheck = (int)Math.Sqrt(DistanceAItoCheck);
+				if (distanceAItoCheck < 20)
+				{
+					if (AIcheckpoint < 28)
+					{
+						AIcheckpoint++;
+					}
+					else
+					{
+						AIlap++;
+						AIcheckpoint = 0;
+					}
+
+				}
 
 
+
+
+				base.Update(gameTime);
+			}
+
+		}
 		private void OnTimedEvent(object source, ElapsedEventArgs e)
 		{
 			keytimer.Enabled = false;
@@ -854,14 +914,17 @@ namespace A_Level_Project_Racing
 					}
 				}
 				car.Draw(spriteBatch);
+
+				AI5.Draw(spriteBatch,car.Position);
 				if (crash)
 				{
 					spriteBatch.DrawString(car.font, "collision", new Vector2(100, 150), Color.Black);
 				}
 				spriteBatch.DrawString(car.font, "intersect : " + intersect, new Vector2(100, 400), Color.Black);
-				spriteBatch.DrawString(car.font, "checkpoint : " + checkdisplayed, new Vector2(100, 450), Color.Black);
+				spriteBatch.DrawString(car.font, "checkpoint : " + checkdisplayed + " AIcheckpoint : " + AIcheckpoint, new Vector2(100, 450), Color.Black);
 				spriteBatch.DrawString(car.font, "Lap : " + lap, new Vector2(100, 500), Color.Black);
-
+				spriteBatch.DrawString(car.font, "steer : " + AI5.steer, new Vector2(100, 350), Color.Black);
+				spriteBatch.DrawString(car.font, "nextcheck : " + AI5.checkdirection, new Vector2(100, 300), Color.Black);
 				spriteBatch.End();
 			}
 			// TODO: Add your drawing code here

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="2017.06.27" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="128" tileheight="128" nextobjectid="55">
+<map version="1.0" tiledversion="2017.06.27" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="128" tileheight="128" nextobjectid="59">
  <tileset firstgid="1" name="spritesheet_tiles" tilewidth="128" tileheight="128" spacing="2" tilecount="465" columns="31">
-  <image source="Raw Files/Racing Pack/Spritesheets/spritesheet_tiles.png" width="4096" height="2048"/>
+  <image source="spritesheet_tiles.png" width="4096" height="2048"/>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
   <data encoding="base64">
@@ -56,19 +56,23 @@
   <object id="38" name="CHECK9" x="3724" y="904" width="240" height="352"/>
   <object id="39" name="CHECK10" x="4988" y="1032" width="244" height="248"/>
   <object id="40" name="CHECK11" x="5012" y="4480" width="264" height="240"/>
-  <object id="41" name="CHECK12" x="4740" y="6008" width="352" height="492"/>
-  <object id="42" name="CHECK13" x="4040" y="5568" width="304" height="428"/>
-  <object id="43" name="CHECK14" x="3980" y="6780" width="364" height="372"/>
-  <object id="44" name="CHECK15" x="5892" y="6776" width="376" height="376"/>
-  <object id="45" name="CHECK16" x="5884" y="4224" width="256" height="256"/>
-  <object id="46" name="CHECK17" x="7556" y="4216" width="240" height="252"/>
-  <object id="47" name="CHECK17" x="5896" y="3964" width="248" height="228"/>
-  <object id="48" name="CHECK18" x="5904" y="2324" width="236" height="228"/>
-  <object id="49" name="CHECK19" x="6080" y="1796" width="312" height="260"/>
-  <object id="50" name="CHECK20" x="4316" y="1800" width="392" height="224"/>
-  <object id="51" name="CHECK21" x="2320" y="1796" width="272" height="228"/>
-  <object id="52" name="CHECK22" x="2216" y="908" width="320" height="248"/>
-  <object id="53" name="CHECK23" x="8" y="924" width="248" height="220"/>
-  <object id="54" name="CHECK24" x="12" y="2304" width="756" height="744"/>
+  <object id="41" name="CHECK14" x="4740" y="6008" width="352" height="492"/>
+  <object id="42" name="CHECK15" x="4040" y="5568" width="304" height="428"/>
+  <object id="43" name="CHECK16" x="3980" y="6780" width="364" height="372"/>
+  <object id="44" name="CHECK17" x="5892" y="6776" width="376" height="376"/>
+  <object id="45" name="CHECK18" x="5884" y="4224" width="256" height="256"/>
+  <object id="46" name="CHECK19" x="7556" y="4216" width="240" height="252"/>
+  <object id="47" name="CHECK21" x="5896" y="3964" width="248" height="228"/>
+  <object id="48" name="CHECK22" x="5904" y="2324" width="236" height="228"/>
+  <object id="49" name="CHECK24" x="6080" y="1796" width="312" height="260"/>
+  <object id="50" name="CHECK25" x="4316" y="1800" width="392" height="224"/>
+  <object id="51" name="CHECK26" x="2320" y="1796" width="272" height="228"/>
+  <object id="52" name="CHECK27" x="2216" y="908" width="320" height="248"/>
+  <object id="53" name="CHECK28" x="8" y="924" width="248" height="220"/>
+  <object id="54" name="CHECK29" x="12" y="2304" width="756" height="744"/>
+  <object id="55" name="CHECK12" x="5200" y="4650" width="219" height="238"/>
+  <object id="56" name="CHECK13" x="4746" y="4757" width="242" height="219"/>
+  <object id="57" name="CHECK20" x="7560" y="3978" width="231" height="208"/>
+  <object id="58" name="CHECK23" x="6157" y="2248" width="219" height="288"/>
  </objectgroup>
 </map>

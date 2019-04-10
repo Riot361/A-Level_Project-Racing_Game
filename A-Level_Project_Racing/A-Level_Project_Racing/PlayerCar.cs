@@ -12,23 +12,110 @@ using System.Diagnostics;
 
 namespace A_Level_Project_Racing
 {
+	class AICar : PlayerCar
+	{
+		public Vector2 NextCheckPoint;
+		Vector2 oldpos;
+		bool up = false;
+		bool down = false;
+		bool left = false;
+		bool right = false;
+		public float tancheckdirection;
+		public float checkdirection;
+
+		public virtual void Update(GameTime gameTime, bool carrecover, A_Level_Project_Racing.Game1.Menu currentmenu, int AIcheckpoint, List<Vector2>[] checkpoint)
+		{
+			speed = 5;
+			restart = carrecover;
+			Recover = restart;
+			NextCheckPoint = (checkpoint[AIcheckpoint][2])-((checkpoint[AIcheckpoint][2]-checkpoint[AIcheckpoint][0])/2);
+			if (NextCheckPoint != null)
+			{
+				tancheckdirection = (NextCheckPoint.Y - Position.Y) / (NextCheckPoint.X - Position.X);
+				if (NextCheckPoint.X < Position.X)
+				{
+					checkdirection = ((float)Math.Atan(tancheckdirection)) - ((float)(Math.PI));
+				}
+				else if (NextCheckPoint.X > Position.X)
+				{
+					checkdirection = ((float)Math.Atan(tancheckdirection));
+				}
+
+				if (steer > (float)(2 * (Math.PI)))
+				{
+					steer = steer - (float)(2*(Math.PI));
+				}
+				else if (steer < 0)
+				{
+					steer = steer + (float)(2 * (Math.PI));
+				}
+
+				if (checkdirection > (float)(2 * (Math.PI)))
+				{
+					checkdirection = checkdirection - (float)(2 * (Math.PI));
+				}
+				else if (checkdirection < 0)
+				{
+					checkdirection = checkdirection + (float)(2 * (Math.PI));
+				}
+
+				if (checkdirection > steer)
+				{
+					if (steer + (float)Math.PI < checkdirection)
+					{
+						steer -= .05f;
+					}
+					else
+					{
+						steer += .05f;
+					}
+					
+				}
+				else if (checkdirection < steer)
+				{
+					if (steer - (float)Math.PI > checkdirection)
+					{
+						steer += .05f;
+					}
+					else
+					{
+						steer -= .05f;
+					}
+					
+				}
+
+				
+			}
+
+			Position = Position + new Vector2(speed * (float)Math.Cos(steer), speed * (float)Math.Sin(steer));
+			if (Recover == true)
+			{
+				Position = savedposition;
+			}
+			bounds = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+		}
+		public virtual void Draw(SpriteBatch spriteBatch, Vector2 vp)
+		{
+			spriteBatch.Draw(texture, Position-vp + origin + new Vector2(640, 320), null, null, origin, steer, null, null, SpriteEffects.FlipHorizontally, 0);
+		}
+	}
 	class PlayerCar
 	{
 		public Texture2D texture;
 		Vector2 position;
-		Vector2 origin;
+		public Vector2 origin;
 		public Vector2 savedposition;
-		float steer = 0;
-		float savedsteer = 0;
-		float speed = 0;
-		float slide = 0;
-		float tempsteer = 0;
-		float drift = 0;
-		float angle = 0;
-		Timer remainingtime;
-		Stopwatch time = new Stopwatch();
+		public float steer = 0;
+		public float savedsteer = 0;
+		public float speed = 0;
+		public float slide = 0;
+		public float tempsteer = 0;
+		public float drift = 0;
+		public float angle = 0;
+		public Timer remainingtime;
+		public Stopwatch time = new Stopwatch();
 		public SpriteFont font;
-		bool Recover = false;
+		public bool Recover = false;
 		public Rectangle bounds;
 		public bool restart = false;
 		public bool timer
@@ -173,7 +260,7 @@ namespace A_Level_Project_Racing
 
 			slide = Math.Abs((angle) * 10);
 		}
-		public void Update(GameTime gameTime, bool carrecover, A_Level_Project_Racing.Game1.Menu currentmenu)
+		public virtual void Update(GameTime gameTime, bool carrecover, A_Level_Project_Racing.Game1.Menu currentmenu)
 		{
 			if (currentmenu == Game1.Menu.play)
 			{
@@ -192,29 +279,13 @@ namespace A_Level_Project_Racing
 			}
 			bounds = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
 		}
-		public void Draw(SpriteBatch spriteBatch)
+		public virtual void Draw(SpriteBatch spriteBatch)
 		{
 			spriteBatch.Draw(texture, origin + new Vector2(640,320), null, null, origin, steer, null, null, SpriteEffects.FlipHorizontally, 0);
 			spriteBatch.DrawString(font, "time:"+time.Elapsed, new Vector2(100, 100), Color.Black);
 			spriteBatch.DrawString(font, "position:" + position, new Vector2(100, 200), Color.Black);
 			spriteBatch.DrawString(font, "bounds:" + bounds, new Vector2(100, 250), Color.Black);
-			// Make a 1x1 texture named pixel.  
-			Texture2D pixel = new Texture2D(spriteBatch.GraphicsDevice, 10, 10);
 
-			Color[] colorData = new Color[100];
-			for (int i = 0; i < 100; i++)
-			{
-				colorData[i] = Color.White;
-			}
-			// Create a 1D array of color data to fill the pixel texture with.  
-			//Color[] colorData = {
-			//			Color.White,
-			//		};
-
-			// Set the texture data with our color information.  
-			pixel.SetData<Color>(colorData);
-			Vector2 temp = new Vector2(bounds.X -position.X, bounds.Y - position.Y) + new Vector2(640,320);
-			spriteBatch.Draw(pixel, temp, Color.White);
 		}
 		public Vector2 Position
 		{
