@@ -22,13 +22,47 @@ namespace A_Level_Project_Racing
 		bool right = false;
 		public float tancheckdirection;
 		public float checkdirection;
+		public float squarecheckdistance;
+		public float checkdistance;
 
 		public virtual void Update(GameTime gameTime, bool carrecover, A_Level_Project_Racing.Game1.Menu currentmenu, int AIcheckpoint, List<Vector2>[] checkpoint)
 		{
-			speed = 5;
 			restart = carrecover;
 			Recover = restart;
 			NextCheckPoint = (checkpoint[AIcheckpoint][2])-((checkpoint[AIcheckpoint][2]-checkpoint[AIcheckpoint][0])/2);
+			squarecheckdistance = ((Position.X - NextCheckPoint.X) * (Position.X - NextCheckPoint.X)) + ((Position.Y - NextCheckPoint.Y) * (Position.Y - NextCheckPoint.Y));
+			checkdistance = (float)Math.Sqrt(squarecheckdistance);
+
+			if (speed < 14 & (checkdistance > 800) & (steer < checkdirection + 0.5f && steer > checkdirection - 0.5f))
+			{
+					speed += 0.25f;
+				
+			}
+			else if (speed < 5 & checkdistance > 150)
+			{
+				speed += 0.1f;
+			}
+			else if (speed < 3 & checkdistance > 0)
+			{
+				speed += 0.2f;
+			}
+			else if (speed > 8 & checkdistance <= 500)
+			{
+				speed -= 0.4f;
+			}
+			else if (checkdistance <= 300)
+			{
+				speed -= 0.1f;
+			}
+			else if (checkdistance <= 50)
+			{
+				speed -= 0.2f;
+			}
+			else
+			{
+				speed -= 0.01f;
+			}
+
 			if (NextCheckPoint != null)
 			{
 				tancheckdirection = (NextCheckPoint.Y - Position.Y) / (NextCheckPoint.X - Position.X);
@@ -63,11 +97,13 @@ namespace A_Level_Project_Racing
 				{
 					if (steer + (float)Math.PI < checkdirection)
 					{
-						steer -= .05f;
+						left = true;
+						right = false;
 					}
 					else
 					{
-						steer += .05f;
+						right = true;
+						left = false;
 					}
 					
 				}
@@ -75,17 +111,63 @@ namespace A_Level_Project_Racing
 				{
 					if (steer - (float)Math.PI > checkdirection)
 					{
-						steer += .05f;
+						right = true;
+						left = false;
 					}
 					else
 					{
-						steer -= .05f;
+						left = true;
+						right = false;
 					}
 					
 				}
+				if (left == true & angle > -.08f)
+				{
+					if (angle > .001f)
+					{
+						angle = angle / 1.25f;
+					}
+					if (speed != 0)
+					{
+						angle -= (.001f) / (speed / 20);
+					}
+					else
+					{
+						angle -= .0005f;
+					}
+				}
+				else if (right == true & angle < .08f)
+				{
+					if (angle < -.001f)
+					{
+						angle = angle / 1.25f;
+					}
+					if (speed != 0)
+					{
+						angle += (.001f) / (speed / 20);
+					}
+					else
+					{
+						angle += .0005f;
+					}
+				}
+				else
+				{
+					angle = 0;
+				}
 
+				if (speed != 0)
+				{
+					steer += angle;
+				}
+				else
+				{
+					steer += 0;
+				}
 				
+
 			}
+
 
 			Position = Position + new Vector2(speed * (float)Math.Cos(steer), speed * (float)Math.Sin(steer));
 			if (Recover == true)
